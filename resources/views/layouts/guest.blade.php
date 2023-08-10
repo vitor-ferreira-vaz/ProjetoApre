@@ -5,9 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-        <script src="jquery.js"></script>
-        <script src="dist/jquery.inputmask.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
         <title>{{ config('app.name', 'Laravel') }}</title>
+
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -30,3 +30,4 @@
         </div>
     </body>
 </html>
+<script src="{{asset('utils/requestcall.js')}}"></script>

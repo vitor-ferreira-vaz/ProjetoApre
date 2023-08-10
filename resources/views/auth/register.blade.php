@@ -11,9 +11,12 @@
         </div>
 
         <!-- Documento -->
-        <div class="mt-4">
-            <x-input-label for="doc" :value="__('CPF/CNPJ')"/>
-            <x-text-input id="doc" class="block mt-1 w-full" type="number" name="doc" :value="old('doc')" required
+        <div class="mt-6">
+            <x-input-label for="doc" :value="__('CPF')" class="mt-1"/>
+            <input id="cpf" class="block mt-1" type="radio">
+            <x-input-label for="doc" :value="__('CNPJ')"/>
+            <input id="cnpj" class="block mt-1" type="radio">
+            <x-text-input id="doc" class="block mt-1 w-full doc" type="text" name="doc" :value="old('doc')" required
                           autocomplete="CPF/CNPJ"/>
             <x-input-error :messages="$errors->get('doc')" class="mt-2"/>
         </div>
@@ -140,19 +143,61 @@
         </div>
     </form>
 </x-guest-layout>
+
 <script>
+    $(document).ready(function () {
+        teste()
 
-    $(document).ready(function() {
+        function teste() {
+            ajaxcall('{{route('register.getEndereco')}}',
+                {
+                    teste1: 12,
+                    teste2: 13
+                },
+                function (success) {
+                    console.log(success)
+                },
+                function (fail){
+                    return fail.msg;
+                }
+            );
+        }
 
 
-        // MASCARAS
-        $('#cep').mask("99999-999");
+        $("#doc").prop('disabled', true);
 
-        $('#doc').inputmask({
-            mask: ['999.999.999-99', '99.999.999/9999-99'],
-            keepStatic: true,
-            showMaskOnHover: false
+        // // MASCARAS
+        $("#cpf").on('click', function () {
+            $("#doc").prop('disabled', false);
+            if ($(this).prop('checked')) {
+                var doc = new Cleave('#doc', {
+                    delimiters: ['.', '.', '-'],
+                    blocks: [3, 3, 3, 2],
+                    numericOnly: true
+                });
+                $("#cnpj").prop('checked', false);
+            }
         });
+        $("#cnpj").on('click', function () {
+            $("#doc").prop('disabled', false);
+            if ($(this).prop('checked')) {
+                var doc = new Cleave('#doc', {
+                    delimiters: ['.', '.', '/', '-'],
+                    blocks: [2, 3, 3, 4, 2],
+                    numericOnly: true
+                });
+                $("#cpf").prop('checked', false);
+            }
+        });
+
+        var cep = new Cleave('#cep', {
+            delimiter: '-',
+            blocks: [5, 3],
+            numericOnly: true
+        });
+        var num = new Cleave('#numero_logra', {numericOnly: true});
+
+
         function limpa_formulário_cep() {
             // Limpa valores do formulário de cep.
             $("#logra").val("");
@@ -163,7 +208,7 @@
         }
 
         //Quando o campo cep perde o foco.
-        $("#cep").blur(function() {
+        $("#cep").blur(function () {
 
             //Nova variável "cep" somente com dígitos.
             var cep = $(this).val().replace(/\D/g, '');
@@ -175,7 +220,7 @@
                 var validacep = /^[0-9]{8}$/;
 
                 //Valida o formato do CEP.
-                if(validacep.test(cep)) {
+                if (validacep.test(cep)) {
 
                     //Preenche os campos com "..." enquanto consulta webservice.
                     $("#logra").val("...");
@@ -185,14 +230,14 @@
                     $("#pais").val("...");
 
                     //Consulta o webservice viacep.com.br/
-                    $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
+                    $.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function (dados) {
 
                         if (!("erro" in dados)) {
                             //Atualiza os campos com os valores da consulta.
 
                             $("#pais").append($('<option>', {
                                 value: 1,
-                                text:'brasil',
+                                text: 'brasil',
                             }, '</option>'));
 
                             $("#uf").append($('<option>', {
@@ -233,9 +278,6 @@
                 limpa_formulário_cep();
             }
         });
-
-
-
 
 
     }); // DOCUMENT...

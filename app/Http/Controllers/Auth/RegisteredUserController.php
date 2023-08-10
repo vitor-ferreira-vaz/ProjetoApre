@@ -50,4 +50,14 @@ class RegisteredUserController extends Controller
 
         return redirect(RouteServiceProvider::HOME);
     }
+
+
+    public function getEndereco(Request $request){
+        $res = 'SUCESSO';
+
+        return response()->json(['success' => true, 'msg' => 'Sucesso!']);
+    }
 }
+
+
+
