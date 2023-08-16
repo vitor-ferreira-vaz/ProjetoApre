@@ -1,5 +1,6 @@
 function ajaxcall(url, data = {}, procSuccess, procFail, dataType = 'json', method) {
 
+    console.log(url)
     // CRIANDO FUNÇÃO QUE SIMPLIFICA A PASSAGEM DE DADOS PARA O SERVIDOR/CONTROLLER
     //USANDO JQUERY
     $.ajax({
@@ -18,16 +19,34 @@ function ajaxcall(url, data = {}, procSuccess, procFail, dataType = 'json', meth
         data: data,
         // ESSA OPTION É ESTÁ ENCARREGADA DE SER CHAMADA CASO O PROCESSO PARA QUAL URL DIRECIONA SEJA BEM SUCEDIDO.
         success: function (callback) {
-            console.log(callback.msg)
+            iziToast.success({
+                title: 'Sucesso!',
+                color: '#2dc653',
+                titleColor: "#FFF",
+                messageColor: "#FFF",
+                message: callback.msg,
+                maxWidth: 600,
+                // timeout: 6000,
+                // icon: 'icon-material',
+                position: 'topRight'
+            });
             return data = procSuccess(callback);
 
         },
         // ESSA OPTION É ESTÁ ENCARREGADA DE SER CHAMADA CASO O PROCESSO PARA QUAL URL DIRECIONA MAL BEM SUCEDIDO.
         error: function (callback) {
-            console.log(callback.msg)
+            iziToast.warning({
+                title: 'Falha!',
+                color: '#e5383b',
+                titleColor: "#FFF",
+                messageColor: "#FFF",
+                message: callback.msg,
+                maxWidth: 600,
+                timeout: 6000,
+                position: 'topRight'
+            });
             return data = procFail(callback);
         },
-
 
 
     });

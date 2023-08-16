@@ -1,7 +1,8 @@
 <x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
+    <form>
         @csrf
         {!! Form::token()!!}
+
         <!-- Name -->
         <div>
             <x-input-label for="nome" :value="__('Nome')"/>
@@ -12,10 +13,7 @@
 
         <!-- Documento -->
         <div class="mt-6">
-            <x-input-label for="doc" :value="__('CPF')" class="mt-1"/>
-            <input id="cpf" class="block mt-1" type="radio">
-            <x-input-label for="doc" :value="__('CNPJ')"/>
-            <input id="cnpj" class="block mt-1" type="radio">
+            <x-input-label for="doc" :value="__('CPF/CNPJ')"/>
             <x-text-input id="doc" class="block mt-1 w-full doc" type="text" name="doc" :value="old('doc')" required
                           autocomplete="CPF/CNPJ"/>
             <x-input-error :messages="$errors->get('doc')" class="mt-2"/>
@@ -41,9 +39,9 @@
         <!-- Pais -->
         <div class="mt-4">
             <x-input-label for="pais" :value="__('Pais')"/>
-            <select id="pais" name="pais" class="block mt-1 w-full">
+            <x-input-select id="pais" name="pais">
                 <option value="">Selecione
-            </select>
+            </x-input-select>
             {{--                @foreach() --}}
             {{--                    <option value=""></option>--}}
             {{--                @endforeach--}}
@@ -53,24 +51,24 @@
         <!-- UF -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('UF')"/>
-            <select id="uf" name="uf" class="block mt-1 w-full">
+            <x-input-select id="uf" name="uf">
                 <option value="">Selecione</option>
                 {{--                @foreach() --}}
                 {{--                    <option value=""></option>--}}
                 {{--                @endforeach--}}
-            </select>
+            </x-input-select>
             <x-input-error :messages="$errors->get('uf')" class="mt-2"/>
         </div>
 
         <!-- Municipio -->
         <div class="mt-4">
             <x-input-label for="municipio" :value="__('Municipio')"/>
-            <select id="municipio" name="municipio" class="block mt-1 w-full">
+            <x-input-select id="municipio" name="municipio">
                 <option value="">Selecione</option>
                 {{--                @foreach() --}}
                 {{--                    <option value=""></option>--}}
                 {{--                @endforeach--}}
-            </select>
+            </x-input-select>
             <x-input-error :messages="$errors->get('municipio')" class="mt-2"/>
         </div>
 
@@ -78,24 +76,24 @@
         <!-- Bairro -->
         <div class="mt-4">
             <x-input-label for="bairro" :value="__('Bairro')"/>
-            <select id="bairro" name="bairro" class="block mt-1 w-full">
+            <x-input-select id="bairro" name="bairro">
                 <option value="">Selecione</option>
                 {{--                @foreach() --}}
                 {{--                    <option value=""></option>--}}
                 {{--                @endforeach--}}
-            </select>
+            </x-input-select>
             <x-input-error :messages="$errors->get('bairro')" class="mt-2"/>
         </div>
 
         <!-- Rua / Logradouro -->
         <div class="mt-4">
             <x-input-label for="logra" :value="__('Logradouro')"/>
-            <select id="logra" name="logra" class="block mt-1 w-full">
+            <x-input-select id="logra" name="logra">
                 <option value="">Selecione</option>
                 {{--                @foreach() --}}
                 {{--                    <option value=""></option>--}}
                 {{--                @endforeach--}}
-            </select>
+            </x-input-select>
             <x-input-error :messages="$errors->get('logra')" class="mt-2"/>
         </div>
 
@@ -137,7 +135,7 @@
                 {{ __('Already registered?') }}
             </a>
 
-            <x-primary-button class="ml-4">
+            <x-primary-button class="ml-4 save">
                 {{ __('Register') }}
             </x-primary-button>
         </div>
@@ -146,57 +144,53 @@
 
 <script>
     $(document).ready(function () {
-        teste()
 
-        function teste() {
-            ajaxcall('{{route('register.getEndereco')}}',
+        $('#cep').inputmask({mask: '99999-999', keepStatic: true});
+        $('#doc').inputmask({
+            mask: ['999.999.999-99', '99.999.999/9999-99'],
+            keepStatic: true,
+            showMaskOnHover: true
+        });
+
+
+        $(".save").on('click', function () {
+            doAjax();
+        });
+
+        function doAjax() {
+
+            // uf = $("#uf").val().replace(/\b\n/, "").replace('\n', "").replace(/\bSelecione/, "").replace('    ', '');
+            nome = $("nome").val();
+            email = $("email").val();
+            doc = $("doc").val();
+            cep = $("#cep option:selected").text();
+            logradouro_id = $("#logra").val("");
+            bairro_id = $("#bairro").val("");
+            mun_id = $("#municipio").val("");
+            uf = $("#uf option:selected").text();
+            pais = $("#pais").val("");
+            num_logra = $("#numero_logra").val();
+            ajaxcall('{{route('register.store')}}',
                 {
-                    teste1: 12,
-                    teste2: 13
+                    nome: nome,
+                    email: email,
+                    doc: doc,
+                    cep: cep,
+                    logradouro_id: logradouro_id,
+                    bairro_id: bairro_id,
+                    mun_id: mun_id,
+                    uf: uf,
+                    pais: pais,
+                    num_logra: num_logra
+
                 },
                 function (success) {
-                    console.log(success)
                 },
-                function (fail){
+                function (fail) {
                     return fail.msg;
                 }
             );
         }
-
-
-        $("#doc").prop('disabled', true);
-
-        // // MASCARAS
-        $("#cpf").on('click', function () {
-            $("#doc").prop('disabled', false);
-            if ($(this).prop('checked')) {
-                var doc = new Cleave('#doc', {
-                    delimiters: ['.', '.', '-'],
-                    blocks: [3, 3, 3, 2],
-                    numericOnly: true
-                });
-                $("#cnpj").prop('checked', false);
-            }
-        });
-        $("#cnpj").on('click', function () {
-            $("#doc").prop('disabled', false);
-            if ($(this).prop('checked')) {
-                var doc = new Cleave('#doc', {
-                    delimiters: ['.', '.', '/', '-'],
-                    blocks: [2, 3, 3, 4, 2],
-                    numericOnly: true
-                });
-                $("#cpf").prop('checked', false);
-            }
-        });
-
-        var cep = new Cleave('#cep', {
-            delimiter: '-',
-            blocks: [5, 3],
-            numericOnly: true
-        });
-        var num = new Cleave('#numero_logra', {numericOnly: true});
-
 
         function limpa_formulário_cep() {
             // Limpa valores do formulário de cep.
@@ -233,15 +227,16 @@
                     $.getJSON("https://viacep.com.br/ws/" + cep + "/json/?callback=?", function (dados) {
 
                         if (!("erro" in dados)) {
+                            console.log(dados)
                             //Atualiza os campos com os valores da consulta.
 
                             $("#pais").append($('<option>', {
                                 value: 1,
-                                text: 'brasil',
+                                text: 'Brasil',
                             }, '</option>'));
 
                             $("#uf").append($('<option>', {
-                                value: 1,
+                                value: dados.uf,
                                 text: dados.uf,
                             }, '</option>'));
 
@@ -259,18 +254,41 @@
                                 value: 1,
                                 text: dados.logradouro,
                             }, '</option>'));
+
+                            $("#uf").val(dados.uf);
+                            $("#municipio").val(1);
+                            $("#bairro").val(1);
+                            $("#logra").val(1);
                         } //end if.
                         else {
                             //CEP pesquisado não foi encontrado.
                             limpa_formulário_cep();
-                            alert("CEP não encontrado.");
+                            iziToast.show({
+                                title: 'Falha!',
+                                color: '#e5383b',
+                                titleColor: "#FFF",
+                                messageColor: "#FFF",
+                                message: "CEP não encontrado.",
+                                maxWidth: 600,
+                                timeout: 6000,
+                                icon: 'icon-material',
+                                position: 'topRight'
+                            });
                         }
                     });
                 } //end if.
                 else {
                     //cep é inválido.
                     limpa_formulário_cep();
-                    alert("Formato de CEP inválido.");
+                    iziToast.warning({
+                        title: 'Falha!',
+                        color: '#e5383b',
+                        titleColor: "#FFF",
+                        messageColor: "#FFF",
+                        message: "Formato de CEP inválido.",
+                        maxWidth: 600,
+                        position: 'topRight'
+                    });
                 }
             } //end if.
             else {

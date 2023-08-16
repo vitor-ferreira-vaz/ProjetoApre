@@ -19,6 +19,7 @@ Route::get('/', function () {
 });
 
 Route::get('/getEndereco', [\App\Http\Controllers\Auth\RegisteredUserController::class, 'getEndereco'])->name('register.getEndereco');
+Route::get('/store', [\App\Http\Controllers\Auth\RegisteredUserController::class, 'store'])->name('register.store');
 
 
 

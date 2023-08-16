@@ -53,9 +53,9 @@ class RegisteredUserController extends Controller
 
 
     public function getEndereco(Request $request){
-        $res = 'SUCESSO';
+        dd($request->all());
 
-        return response()->json(['success' => true, 'msg' => 'Sucesso!']);
+        return response()->json(['success' => true, 'msg' => 'Cadastro Feito Com Suceso!']);
     }
 }
 
