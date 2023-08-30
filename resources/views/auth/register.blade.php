@@ -170,6 +170,7 @@
             uf = $("#uf option:selected").text();
             pais = $("#pais").val("");
             num_logra = $("#numero_logra").val();
+            console.log('{{route('register.store')}}')
             ajaxcall('{{route('register.store')}}',
                 {
                     nome: nome,
